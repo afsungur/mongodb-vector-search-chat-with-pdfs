@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Config</title>
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" />
+</head>
+<body>
+  <div class="ui middle aligned center aligned grid" style="height: 100vh;">
+    <div class="column" style="max-width: 450px;">
+      <div class="ui segment">
+        <h2 class="ui header">Configuration</h2>
+        <form class="ui form" method="post" action="{{ url_for('config_save') }}">
+          <div class="field">
+            <label>OpenAI Key</label>
+            <input type="text" name="openai_key" placeholder="Enter your OpenAI API key" required />
+          </div>
+          <div class="field">
+            <label>Embedding Model Choose</label>
+            <select class="ui dropdown" name="embedding_model" required>
+              <option value="">Select a model</option>
+              <option value="openai">OpenAI Embeddings</option>
+              <option value="voyageai">Voyage-AI-3.5-lite</option>
+              <option value="mpnet">MPNet-Base-V2</option>
+            </select>
+          </div>
+          <div class="field" id="voyageai-key-field" style="display:none;">
+            <label>VoyageAI Embedding API Key</label>
+            <input type="text" name="voyageai_key" placeholder="Enter your Voyage AI API key" />
+          </div>
+          <h3 class="ui dividing header">Database Configuration</h3>
+          <div class="field">
+            <label>MongoDB Connection String</label>
+            <input type="text" name="mongo_uri" placeholder="mongodb://user:pass@host:port" required />
+          </div>
+          <div class="field">
+            <label>Database Name</label>
+            <input type="text" name="db_name" placeholder="Enter database name" required />
+          </div>
+          <div class="field">
+            <label>Collection Name</label>
+            <input type="text" name="collection_name" placeholder="Enter collection name" required />
+          </div>
+          <button class="ui primary button" type="submit">Save</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</script>
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      // Fetch existing configuration on page load
+      $.get('/message', function(data) {
+        // Populate OpenAI Key
+        $('input[name="openai_key"]').val(data['openai-key'] || '');
+
+        // Populate Embedding Model dropdown
+        if (data['selectedEmbeddingModel']) {
+          $('select[name="embedding_model"]').dropdown('set selected', data['selectedEmbeddingModel']);
+        }
+
+        // Toggle and populate VoyageAI key if applicable
+        if (data['voyageai-key']) {
+          $('#voyageai-key-field').show();
+          $('input[name="voyageai_key"]').val(data['voyageai-key']);
+        } else {
+          $('#voyageai-key-field').hide();
+        }
+
+        // Populate database fields
+        $('input[name="mongo_uri"]').val(data['mongodb_uri'] || '');
+        $('input[name="db_name"]').val(data['mongodb_database'] || '');
+        $('input[name="collection_name"]').val(data['mongodb_collection'] || '');
+      }).fail(function(err) {
+        console.error('Failed to load configuration:', err);
+      });
+    });
+  </script>
+</body>
+</html>

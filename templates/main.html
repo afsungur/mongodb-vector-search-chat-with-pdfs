@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Main</title>
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" />
+</head>
+<body>
+  <div class="ui vertical masthead center aligned segment" style="min-height: 100vh; padding: 2em 0;">
+    <div class="ui text container">
+      <h2 class="ui header">Welcome</h2>
+      <div class="ui vertical four fluid buttons">
+        <button id="configBtn" type="button" class="ui button">
+          <i class="cog icon"></i>
+          Config
+        </button>
+        <button id="abcBtn" type="button" class="ui button">
+          <i class="eye icon"></i>
+          Show Config
+        </button>
+        <button id="emptyRepoBtn" type="button" class="ui button">
+          <i class="trash icon"></i>
+          Empty Repository
+        </button>
+        <button id="createIndexBtn" type="button" class="ui button">
+          <i class="plus circle icon"></i>
+          Create Vector Search Index
+        </button>
+        <button id="buildBtnLink" type="button" class="ui button">
+          <i class="rocket icon"></i>
+          Build Repository
+        </button>
+        <button id="askBtn" type="button" class="ui button">
+          <i class="question circle icon"></i>
+          Ask Question
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="ui basic modal" id="abcModal">
+    <div class="ui icon header">
+      <i class="info icon"></i>
+      Message
+    </div>
+    <div class="content">
+      <pre id="messageContent" style="white-space: pre-wrap; word-wrap: break-word;"></pre>
+    </div>
+    <div class="actions">
+      <div class="ui ok inverted button">
+        OK
+      </div>
+    </div>
+  </div>
+  <div class="ui basic modal" id="confirmEmptyModal">
+    <div class="ui icon header">
+      <i class="warning circle icon"></i>
+      Confirm Empty Repository
+    </div>
+    <div class="content">
+      <p>Are you sure you want to empty the repository?</p>
+    </div>
+    <div class="actions">
+      <div class="ui red basic cancel inverted button">
+        <i class="remove icon"></i>
+        No
+      </div>
+      <div class="ui green ok inverted button">
+        <i class="checkmark icon"></i>
+        Yes
+      </div>
+    </div>
+  </div>
+</body>
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+<script>
+  $('#abcBtn').on('click', function() {
+    $.get('/message', function(data) {
+      console.log(data)
+      $('#messageContent').text(JSON.stringify(data, null, 2));
+      $('#abcModal').modal('show');
+    });
+  });
+
+  $('#emptyRepoBtn').on('click', function() {
+    $('#confirmEmptyModal')
+      .modal({
+        closable: false,
+        onApprove: function() {
+          $.get('/empty-repo', function(data) {
+            console.log('EmptyRepo response:', data);
+            $('#messageContent').text(data.message || JSON.stringify(data, null, 2));
+            $('#abcModal').modal('show');
+          });
+        }
+      })
+      .modal('show');
+  });
+
+    $('#createIndexBtn').on('click', function() {
+    $.get('/create-index', function(data) {
+      console.log('Create index response:', data);
+      // Optionally show feedback in the modal:
+      $('#messageContent').text(data.message || JSON.stringify(data));
+      $('#abcModal').modal('show');
+    });
+  });
+</script>
+<script>
+  $('#configBtn').on('click', function() {
+    window.location.href = "{{ url_for('config') }}";
+  });
+  $('#buildBtnLink').on('click', function() {
+    window.location.href = "{{ url_for('build') }}";
+  });
+  $('#askBtn').on('click', function() {
+    window.location.href = "{{ url_for('ask') }}";
+  });
+</script>
+</html>

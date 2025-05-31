@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ask Question</title>
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" />
+</head>
+<body>
+  <div class="ui page dimmer" id="loadingDimmer">
+    <div class="content">
+      <div class="center">
+        <div class="ui inverted text loader">Querying...</div>
+      </div>
+    </div>
+  </div>
+  <div class="ui container" style="margin-top: 2em;">
+    <h2 class="ui header">Ask a Question</h2>
+    <form class="ui form" method="post" action="{{ url_for('ask') }}">
+      <div class="field">
+        <label>Question</label>
+        <input type="text" name="query" placeholder="Enter your question..." />
+      </div>
+      <button class="ui primary button" type="submit">Submit</button>
+    </form>
+    {% if answer %}
+    <div class="ui segment" style="margin-top: 2em;">
+      <h3 class="ui header">Question</h3>
+      <p>{{ question }}</p>
+      <h3 class="ui header">Answer</h3>
+      <p>{{ answer }}</p>
+      <h4 class="ui header">Sources</h4>
+      <table class="ui celled table" style="margin-top: 1em;">
+        <thead>
+          <tr>
+            <th>Document Path</th>
+            <th>Source Information</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for doc in sources %}
+          <tr>
+            <td>{{ doc.metadata.source }}</td>
+            <td>{{ doc.page_content }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+  </div>
+</body>
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+<script>
+  $(document).ready(function() {
+    // Initialize dimmer
+    $('#loadingDimmer').dimmer({closable: false});
+    // Show on form submit
+    $('form.ui.form').on('submit', function() {
+      $('#loadingDimmer').dimmer('show');
+    });
+  });
+</script>
+</html>
